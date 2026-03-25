@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Universe Journey | Nikhil</title>
+    <style>
+        :root {
+            --u-blue: #0ea5e9;
+            --s-red: #ef4444;
+            --gold: #f59e0b;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            background-color: #020617;
+            background-image: linear-gradient(rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 0.8)), url('mystic-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #f8fafc;
+            font-family: 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .page-header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: clamp(3rem, 10vw, 5.5rem);
+            text-transform: uppercase;
+            letter-spacing: 15px;
+            margin: 0;
+            background: linear-gradient(to right, #fff, var(--u-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 0 20px 100px;
+        }
+
+        .journey-step {
+            position: relative;
+            padding: 40px;
+            margin-bottom: 80px;
+            border-left: 2px solid rgba(255, 255, 255, 0.1);
+            margin-left: 30px;
+        }
+
+        .journey-step::before {
+            content: '';
+            position: absolute;
+            left: -11px;
+            top: 50px;
+            width: 20px;
+            height: 20px;
+            background: var(--u-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--u-blue);
+        }
+
+        .science::before {
+            background: var(--s-red);
+            box-shadow: 0 0 15px var(--s-red);
+        }
+
+        .step-content {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 0 25px 25px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        h2 { margin: 0 0 15px; color: var(--gold); font-size: 1.6rem; letter-spacing: 1px; }
+
+        /* Image Styling */
+        .step-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #000; /* ഫോട്ടോ ഇല്ലെങ്കിൽ കറുത്ത ബോക്സ് കാണാൻ */
+        }
+
+        p { color: #cbd5e1; margin-bottom: 20px; font-size: 1.1rem; }
+
+        summary {
+            cursor: pointer;
+            color: var(--u-blue);
+            font-weight: bold;
+            letter-spacing: 1px;
+            padding: 10px 0;
+            display: inline-block;
+        }
+
+        .science h2 { color: var(--s-red); }
+        .science summary { color: var(--s-red); }
+
+        .details {
+            margin-top: 15px;
+            padding: 20px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 12px;
+            border-left: 4px solid var(--u-blue);
+            color: #94a3b8;
+        }
+
+        .science .details { border-left-color: var(--s-red); }
+
+        footer { text-align: center; padding: 60px; opacity: 0.4; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+
+    <section class="page-header">
+        <h1>UNIVERSE</h1>
+        <p style="color: #94a3b8; letter-spacing: 5px;">A JOURNEY THROUGH EXISTENCE</p>
+    </section>
+
+    <div class="container">
+
+        <div class="journey-step">
+            <div class="step-content">
+                <h2>01. The Big Bang</h2>
+                <img src="bigbang.jpg" alt="Big Bang" class="step-img">
+                <p>The violent and beautiful birth of our universe.</p>
+                <details>
+                    <summary>READ EXPLORATION</summary>
+                    <div class="details">
+                        The universe began 13.8 billion years ago from a singularity. It wasn't an explosion <i>in</i> space, but an expansion <i>of</i> space itself.
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div class="journey-step">
+            <div class="step-content">
+                <h2>02. Stars & Galaxies</h2>
+                <img src="galaxies.jpg" alt="Galaxies" class="step-img">
+                <p>Billions of stars forming giant cosmic islands.</p>
+                <details>
+                    <summary>READ EXPLORATION</summary>
+                    <div class="details">
+                        First stars were massive and bright. They lived fast and died young, spreading the elements needed for life across the newborn galaxies.
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div class="journey-step">
+            <div class="step-content">
+                <h2>03. Our Solar System</h2>
+                <img src="solar system.jpg" alt="Solar System" class="step-img">
+                <p>The sun and its family of eight planets.</p>
+                <details>
+                    <summary>READ EXPLORATION</summary>
+                    <div class="details">
+                        Our Sun is a second or third-generation star. Around it, the debris from old stars formed the planets, including our vibrant Earth.
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div class="journey-step science">
+            <div class="step-content">
+                <h2>04. Black Holes</h2>
+                <img src="black hole.jpg" alt="Black Hole" class="step-img">
+                <p>Where gravity becomes infinite and space-time breaks.</p>
+                <details>
+                    <summary>EXPLORE SCIENCE</summary>
+                    <div class="details">
+                        Black holes are the ultimate gravity traps. Once you cross the Event Horizon, even the fastest thing in the universe—light—cannot escape.
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div class="journey-step science">
+            <div class="step-content">
+                <h2>05. Quantum Mystery</h2>
+                <img src="quantum.jpg" alt="Quantum Physics" class="step-img">
+                <p>The weird logic of the incredibly small particles.</p>
+                <details>
+                    <summary>EXPLORE SCIENCE</summary>
+                    <div class="details">
+                        Quantum mechanics suggests that at the atomic level, things don't have a single state until they are observed. It's the most tested and strange theory in science.
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div class="journey-step science">
+            <div class="step-content">
+                <h2>06. Dark Matter & Energy</h2>
+                <img src="dark matter.jpg" alt="Dark Matter" class="step-img">
+                <p>The invisible force controlling the fate of the universe.</p>
+                <details>
+                    <summary>EXPLORE SCIENCE</summary>
+                    <div class="details">
+                        Dark Matter acts like cosmic glue, while Dark Energy acts like a cosmic gas pedal, pushing the universe to expand faster every second.
+                    </div>
+                </details>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        Created by nikhil jz
+    </footer>
+
+</body>
+</html>
