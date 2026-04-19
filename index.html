@@ -1,227 +1,339 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Universe Journey | Nikhil</title>
+    <title>Universe Journey | Nikhil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --u-blue: #0ea5e9;
-            --s-red: #ef4444;
+            --blue: #0ea5e9;
+            --red: #ef4444;
             --gold: #f59e0b;
+            --dark: #020617;
+            --card: rgba(15, 23, 42, 0.85);
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--dark); color: #f8fafc; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
+        #stars-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
-        html { scroll-behavior: smooth; }
+        .hero { position: relative; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; z-index: 1; }
+        .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(14,165,233,0.15) 0%, transparent 70%); }
+        .hero h1 { font-family: 'Orbitron', monospace; font-size: clamp(2.5rem,9vw,6rem); font-weight: 900; letter-spacing: 12px; color: #fff; text-shadow: 0 0 40px var(--blue), 0 0 80px rgba(14,165,233,0.4); animation: titlePulse 4s ease-in-out infinite; }
+        @keyframes titlePulse { 0%,100% { text-shadow: 0 0 40px var(--blue), 0 0 80px rgba(14,165,233,0.4); } 50% { text-shadow: 0 0 60px var(--blue), 0 0 120px rgba(14,165,233,0.6); } }
+        .hero p { letter-spacing: 5px; font-size: 1.1rem; color: #94a3b8; margin-top: 16px; font-weight: 300; }
+        .scroll-hint { position: absolute; bottom: 40px; display: flex; flex-direction: column; align-items: center; gap: 8px; color: #475569; font-size: 0.8rem; letter-spacing: 3px; animation: bounce 2s ease-in-out infinite; }
+        .scroll-hint::after { content: ''; width: 1px; height: 50px; background: linear-gradient(to bottom, #475569, transparent); }
+        @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
 
-        body {
-            margin: 0;
-            background-color: #020617;
-            background-image: linear-gradient(rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 0.8)), url('mystic-bg.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: #f8fafc;
-            font-family: 'Segoe UI', sans-serif;
-            overflow-x: hidden;
+        .container { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 40px 20px 80px; }
+
+        .journey-step { padding: 36px; margin-bottom: 60px; background: var(--card); border-radius: 24px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(12px); opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease, border-color 0.3s; }
+        .journey-step.visible { opacity: 1; transform: translateY(0); }
+        .journey-step:hover { border-color: rgba(14,165,233,0.3); }
+        .step-number { font-family: 'Orbitron', monospace; font-size: 0.7rem; letter-spacing: 4px; color: var(--blue); margin-bottom: 10px; opacity: 0.7; }
+        .step-img { width: 100%; height: 280px; object-fit: cover; border-radius: 16px; margin-bottom: 24px; filter: brightness(0.85) saturate(1.2); transition: filter 0.3s; }
+        .journey-step:hover .step-img { filter: brightness(1) saturate(1.4); }
+        h2 { color: var(--gold); font-family: 'Orbitron', monospace; font-size: 1.3rem; font-weight: 700; margin-bottom: 14px; letter-spacing: 2px; }
+        .black-hole-step h2 { color: var(--red); }
+        .malayalam { color: #cbd5e1; font-size: 1.15rem; line-height: 1.8; margin-bottom: 18px; }
+        .fact-box { background: rgba(14,165,233,0.08); border-left: 3px solid var(--blue); padding: 16px 20px; border-radius: 0 12px 12px 0; font-size: 1rem; line-height: 1.7; color: #94a3b8; }
+        .black-hole-step .fact-box { background: rgba(239,68,68,0.08); border-left-color: var(--red); }
+        .fact-box b { color: var(--blue); }
+        .black-hole-step .fact-box b { color: var(--red); }
+
+        /* Quiz */
+        .quiz-section { position: relative; z-index: 1; background: rgba(15,23,42,0.9); border: 1px solid rgba(245,158,11,0.3); border-radius: 28px; padding: 50px 40px; margin-top: 20px; opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+        .quiz-section.visible { opacity: 1; transform: translateY(0); }
+        .quiz-title { font-family: 'Orbitron', monospace; color: var(--gold); text-align: center; font-size: 1.6rem; letter-spacing: 4px; margin-bottom: 6px; }
+        .quiz-subtitle { text-align: center; color: #475569; font-size: 0.95rem; letter-spacing: 2px; margin-bottom: 30px; }
+
+        .round-indicator { display: flex; justify-content: center; gap: 16px; margin-bottom: 28px; }
+        .round-dot { width: 52px; height: 52px; border-radius: 50%; border: 2px solid rgba(245,158,11,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', monospace; font-size: 0.65rem; color: #475569; transition: all 0.4s; letter-spacing: 1px; }
+        .round-dot.active { border-color: var(--gold); color: var(--gold); background: rgba(245,158,11,0.1); box-shadow: 0 0 16px rgba(245,158,11,0.3); }
+        .round-dot.done { border-color: #22c55e; color: #22c55e; background: rgba(34,197,94,0.1); }
+
+        .round-label { text-align: center; font-family: 'Orbitron', monospace; font-size: 0.85rem; letter-spacing: 3px; color: var(--gold); margin-bottom: 32px; }
+
+        .quiz-item { margin-bottom: 32px; }
+        .quiz-question { font-size: 1.1rem; color: #e2e8f0; margin-bottom: 14px; line-height: 1.6; font-weight: 600; }
+        .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .quiz-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; padding: 12px 16px; border-radius: 10px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-size: 1rem; text-align: left; transition: all 0.2s; line-height: 1.4; }
+        .quiz-btn:hover:not(:disabled) { background: rgba(14,165,233,0.12); border-color: var(--blue); color: #fff; }
+        .quiz-btn.correct { background: rgba(34,197,94,0.15); border-color: #22c55e; color: #86efac; }
+        .quiz-btn.wrong { background: rgba(239,68,68,0.12); border-color: var(--red); color: #fca5a5; }
+        .quiz-btn:disabled { cursor: default; }
+        .quiz-feedback { margin-top: 8px; font-size: 0.95rem; min-height: 20px; color: #94a3b8; padding-left: 4px; }
+
+        .round-result { display: none; text-align: center; padding: 28px 0 10px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 16px; }
+        .round-score-num { font-family: 'Orbitron', monospace; font-size: 2.2rem; color: var(--gold); }
+        .round-score-label { color: #64748b; font-size: 0.85rem; letter-spacing: 2px; margin: 6px 0 20px; }
+        .next-round-btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 12px 36px; border-radius: 8px; cursor: pointer; font-family: 'Orbitron', monospace; font-size: 0.75rem; letter-spacing: 2px; transition: all 0.2s; }
+        .next-round-btn:hover { background: rgba(245,158,11,0.1); }
+
+        .final-result { display: none; text-align: center; padding: 28px 0 10px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 16px; }
+        .final-score-num { font-family: 'Orbitron', monospace; font-size: 3rem; color: var(--gold); }
+        .final-score-label { color: #64748b; font-size: 0.85rem; letter-spacing: 2px; margin: 8px 0 16px; }
+        .final-msg { font-size: 1.15rem; color: #94a3b8; margin-bottom: 24px; line-height: 1.7; }
+        .reset-btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 12px 36px; border-radius: 8px; cursor: pointer; font-family: 'Orbitron', monospace; font-size: 0.75rem; letter-spacing: 2px; transition: all 0.2s; }
+        .reset-btn:hover { background: rgba(245,158,11,0.1); }
+
+        footer { position: relative; z-index: 1; text-align: center; padding: 50px; color: #1e293b; font-family: 'Orbitron', monospace; font-size: 0.75rem; letter-spacing: 3px; }
+
+        @media (max-width: 600px) {
+            .quiz-options { grid-template-columns: 1fr; }
+            .quiz-section { padding: 30px 20px; }
+            .journey-step { padding: 24px; }
         }
-
-        .page-header {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        .page-header h1 {
-            font-size: clamp(3rem, 10vw, 5.5rem);
-            text-transform: uppercase;
-            letter-spacing: 15px;
-            margin: 0;
-            background: linear-gradient(to right, #fff, var(--u-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .container {
-            max-width: 850px;
-            margin: 0 auto;
-            padding: 0 20px 100px;
-        }
-
-        .journey-step {
-            position: relative;
-            padding: 40px;
-            margin-bottom: 80px;
-            border-left: 2px solid rgba(255, 255, 255, 0.1);
-            margin-left: 30px;
-        }
-
-        .journey-step::before {
-            content: '';
-            position: absolute;
-            left: -11px;
-            top: 50px;
-            width: 20px;
-            height: 20px;
-            background: var(--u-blue);
-            border-radius: 50%;
-            box-shadow: 0 0 15px var(--u-blue);
-        }
-
-        .science::before {
-            background: var(--s-red);
-            box-shadow: 0 0 15px var(--s-red);
-        }
-
-        .step-content {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(15px);
-            padding: 30px;
-            border-radius: 0 25px 25px 25px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        h2 { margin: 0 0 15px; color: var(--gold); font-size: 1.6rem; letter-spacing: 1px; }
-
-        /* Image Styling */
-        .step-img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: #000; /* ഫോട്ടോ ഇല്ലെങ്കിൽ കറുത്ത ബോക്സ് കാണാൻ */
-        }
-
-        p { color: #cbd5e1; margin-bottom: 20px; font-size: 1.1rem; }
-
-        summary {
-            cursor: pointer;
-            color: var(--u-blue);
-            font-weight: bold;
-            letter-spacing: 1px;
-            padding: 10px 0;
-            display: inline-block;
-        }
-
-        .science h2 { color: var(--s-red); }
-        .science summary { color: var(--s-red); }
-
-        .details {
-            margin-top: 15px;
-            padding: 20px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 12px;
-            border-left: 4px solid var(--u-blue);
-            color: #94a3b8;
-        }
-
-        .science .details { border-left-color: var(--s-red); }
-
-        footer { text-align: center; padding: 60px; opacity: 0.4; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
-    <section class="page-header">
-        <h1>UNIVERSE</h1>
-        <p style="color: #94a3b8; letter-spacing: 5px;">A JOURNEY THROUGH EXISTENCE</p>
-    </section>
+<canvas id="stars-canvas"></canvas>
 
-    <div class="container">
+<section class="hero">
+    <h1>THE UNIVERSE</h1>
+    <p>A Journey of Discovery &nbsp;·&nbsp; Nikhil</p>
+    <div class="scroll-hint">SCROLL</div>
+</section>
 
-        <div class="journey-step">
-            <div class="step-content">
-                <h2>01. The Big Bang</h2>
-                <img src="bigbang.jpg" alt="Big Bang" class="step-img">
-                <p>The violent and beautiful birth of our universe.</p>
-                <details>
-                    <summary>READ EXPLORATION</summary>
-                    <div class="details">
-                        The universe began 13.8 billion years ago from a singularity. It wasn't an explosion <i>in</i> space, but an expansion <i>of</i> space itself.
-                    </div>
-                </details>
-            </div>
-        </div>
+<div class="container">
 
-        <div class="journey-step">
-            <div class="step-content">
-                <h2>02. Stars & Galaxies</h2>
-                <img src="galaxies.jpg" alt="Galaxies" class="step-img">
-                <p>Billions of stars forming giant cosmic islands.</p>
-                <details>
-                    <summary>READ EXPLORATION</summary>
-                    <div class="details">
-                        First stars were massive and bright. They lived fast and died young, spreading the elements needed for life across the newborn galaxies.
-                    </div>
-                </details>
-            </div>
-        </div>
-
-        <div class="journey-step">
-            <div class="step-content">
-                <h2>03. Our Solar System</h2>
-                <img src="solar system.jpg" alt="Solar System" class="step-img">
-                <p>The sun and its family of eight planets.</p>
-                <details>
-                    <summary>READ EXPLORATION</summary>
-                    <div class="details">
-                        Our Sun is a second or third-generation star. Around it, the debris from old stars formed the planets, including our vibrant Earth.
-                    </div>
-                </details>
-            </div>
-        </div>
-
-        <div class="journey-step science">
-            <div class="step-content">
-                <h2>04. Black Holes</h2>
-                <img src="black hole.jpg" alt="Black Hole" class="step-img">
-                <p>Where gravity becomes infinite and space-time breaks.</p>
-                <details>
-                    <summary>EXPLORE SCIENCE</summary>
-                    <div class="details">
-                        Black holes are the ultimate gravity traps. Once you cross the Event Horizon, even the fastest thing in the universe—light—cannot escape.
-                    </div>
-                </details>
-            </div>
-        </div>
-
-        <div class="journey-step science">
-            <div class="step-content">
-                <h2>05. Quantum Mystery</h2>
-                <img src="quantum.jpg" alt="Quantum Physics" class="step-img">
-                <p>The weird logic of the incredibly small particles.</p>
-                <details>
-                    <summary>EXPLORE SCIENCE</summary>
-                    <div class="details">
-                        Quantum mechanics suggests that at the atomic level, things don't have a single state until they are observed. It's the most tested and strange theory in science.
-                    </div>
-                </details>
-            </div>
-        </div>
-
-        <div class="journey-step science">
-            <div class="step-content">
-                <h2>06. Dark Matter & Energy</h2>
-                <img src="dark matter.jpg" alt="Dark Matter" class="step-img">
-                <p>The invisible force controlling the fate of the universe.</p>
-                <details>
-                    <summary>EXPLORE SCIENCE</summary>
-                    <div class="details">
-                        Dark Matter acts like cosmic glue, while Dark Energy acts like a cosmic gas pedal, pushing the universe to expand faster every second.
-                    </div>
-                </details>
-            </div>
-        </div>
-
+    <div class="journey-step">
+        <div class="step-number">CHAPTER 01</div>
+        <h2>The Big Bang</h2>
+        <img src="bigbang.jpg" class="step-img" alt="Big Bang">
+        <p class="malayalam">1380 കോടി വർഷങ്ങൾക്ക് മുമ്പ് ഒരു മഹാവിസ്ഫോടനത്തിലൂടെയാണ് പ്രപഞ്ചം ജനിച്ചത്. സമയവും സ്ഥലവും ആ ഒരു നിമിഷത്തിൽ നിന്ന് ആരംഭിച്ചു.</p>
+        <div class="fact-box"><b>Did you know?</b> വിസ്ഫോടനത്തിന് ശേഷം വെറും ഒരു സെക്കൻഡിനുള്ളിൽ പ്രപഞ്ചത്തിന് ഇന്നത്തെ ഗാലക്സികളുടെ വലിപ്പമുണ്ടായി!</div>
     </div>
 
-    <footer>
-        Created by nikhil jz
-    </footer>
+    <div class="journey-step">
+        <div class="step-number">CHAPTER 02</div>
+        <h2>Stars & Galaxies</h2>
+        <img src="galaxies.jpg" class="step-img" alt="Galaxies">
+        <p class="malayalam">വാതകങ്ങളും പൊടിപടലങ്ങളും ഒത്തുചേർന്നാണ് ആദ്യത്തെ നക്ഷത്രങ്ങൾ ഉണ്ടായത്. ഒരോ നക്ഷത്രവും ഒരു സൂര്യനാണ്, ചിലത് നമ്മുടേതിനെക്കാൾ ദശലക്ഷം മടങ്ങ് വലുതും.</p>
+        <div class="fact-box"><b>Did you know?</b> നമ്മുടെ ഗാലക്സിയായ 'ആകാശഗംഗ' (Milky Way) ഒരു സെക്കൻഡിൽ ഏകദേശം 600 കിലോമീറ്റർ വേഗതയിൽ സഞ്ചരിക്കുന്നുണ്ട്!</div>
+    </div>
 
+    <div class="journey-step">
+        <div class="step-number">CHAPTER 03</div>
+        <h2>Our Solar System</h2>
+        <img src="solar system.jpg" class="step-img" alt="Solar System">
+        <p class="malayalam">സൂര്യനും എട്ട് ഗ്രഹങ്ങളും ഉൾപ്പെടുന്നതാണ് നമ്മുടെ ചെറിയ ലോകം. ഭൂമി മാത്രമാണ് ഇപ്പോഴും ജീവൻ ഉള്ളതായി അറിയാവുന്ന ഏക ഗ്രഹം.</p>
+        <div class="fact-box"><b>Did you know?</b> ശനിക്ക് ചുറ്റുമുള്ള വലയങ്ങൾ (Rings) ശരിക്കും ഐസ് കഷ്ണങ്ങളും പാറക്കഷ്ണങ്ങളും കൊണ്ട് ഉണ്ടായതാണ്!</div>
+    </div>
+
+    <div class="journey-step black-hole-step">
+        <div class="step-number" style="color:var(--red)">CHAPTER 04</div>
+        <h2>Black Holes</h2>
+        <img src="black hole.jpg" class="step-img" alt="Black Hole">
+        <p class="malayalam">പ്രകാശത്തിന് പോലും രക്ഷപ്പെടാൻ കഴിയാത്ത പ്രപഞ്ചത്തിലെ ഏറ്റവും ശക്തമായ ഇടങ്ങൾ. ഇവ സ്ഥലകാലത്തെ തന്നെ വളച്ചൊടിക്കുന്നു.</p>
+        <div class="fact-box"><b>Did you know?</b> ഒരു ബ്ലാക്ക് ഹോളിന് ഉള്ളിൽ സമയം വളരെ സാവധാനത്തിലാണ് സഞ്ചരിക്കുന്നത്!</div>
+    </div>
+
+    <div class="journey-step">
+        <div class="step-number">CHAPTER 05</div>
+        <h2>Quantum World</h2>
+        <img src="quantum.jpg" class="step-img" alt="Quantum">
+        <p class="malayalam">കണ്ണിന് കാണാൻ കഴിയാത്ത ചെറിയ കണികകളുടെ ലോകത്തെ അത്ഭുതങ്ങൾ. ഒരു കണിക ഒരേ സമയം രണ്ട് ഇടത്ത് ഉണ്ടാകാം — ഇതാണ് ക്വാണ്ടം ലോകത്തിന്റെ മാജിക്!</p>
+        <div class="fact-box"><b>Did you know?</b> നമ്മുടെ ശരീരത്തിലെ ആറ്റങ്ങൾക്കിടയിലുള്ള ശൂന്യസ്ഥലം ഒഴിവാക്കിയാൽ മനുഷ്യവംശത്തെ മുഴുവൻ ഒരു പഞ്ചസാര തരിയുടെ ഉള്ളിൽ ഒതുക്കാം!</div>
+    </div>
+
+    <div class="journey-step">
+        <div class="step-number">CHAPTER 06</div>
+        <h2>Dark Matter & Energy</h2>
+        <img src="dark matter.jpg" class="step-img" alt="Dark Matter">
+        <p class="malayalam">പ്രപഞ്ചത്തിന്റെ 95 ശതമാനവും നമുക്ക് കാണാൻ കഴിയാത്ത ഈ നിഗൂഢ ഊർജ്ജമാണ്. ഇന്നും ശാസ്ത്രജ്ഞർക്ക് ഇതിന്റെ യഥാർഥ സ്വഭാവം അറിയില്ല.</p>
+        <div class="fact-box"><b>Did you know?</b> പ്രപഞ്ചം ഓരോ സെക്കൻഡിലും വികസിച്ചുകൊണ്ടിരിക്കുകയാണ്, അത് ഇനിയും വേഗത പ്രാപിക്കും!</div>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="quiz-section">
+        <div class="quiz-title">BRAIN GYM</div>
+        <div class="quiz-subtitle">3 ROUNDS · 12 QUESTIONS · TEST YOUR KNOWLEDGE</div>
+
+        <div class="round-indicator">
+            <div class="round-dot active" id="dot-1">R1</div>
+            <div class="round-dot" id="dot-2">R2</div>
+            <div class="round-dot" id="dot-3">R3</div>
+        </div>
+
+        <div class="round-label" id="round-label">ROUND 1 — Big Bang & Stars</div>
+        <div id="questions-container"></div>
+
+        <div class="round-result" id="round-result">
+            <div class="round-score-num" id="round-score-num"></div>
+            <div class="round-score-label">THIS ROUND SCORE</div>
+            <button class="next-round-btn" id="next-round-btn" onclick="nextRound()">NEXT ROUND →</button>
+        </div>
+
+        <div class="final-result" id="final-result">
+            <div class="final-score-num" id="final-score-num"></div>
+            <div class="final-score-label">TOTAL SCORE (12 QUESTIONS)</div>
+            <div class="final-msg" id="final-msg"></div>
+            <button class="reset-btn" onclick="resetQuiz()">PLAY AGAIN</button>
+        </div>
+    </div>
+
+</div>
+
+<footer>© 2026 UNIVERSE EXPLORER PROJECT · NIKHIL</footer>
+
+<script>
+/* Stars */
+const canvas = document.getElementById('stars-canvas');
+const ctx = canvas.getContext('2d');
+let stars = [];
+function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+function initStars() {
+    stars = [];
+    for (let i = 0; i < 220; i++)
+        stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*1.4+0.2, speed: Math.random()*0.008+0.003, phase: Math.random()*Math.PI*2 });
+}
+function drawStars(t) {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    stars.forEach(s => {
+        const a = 0.3+0.7*(0.5+0.5*Math.sin(t*s.speed+s.phase));
+        ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(255,255,255,${a})`; ctx.fill();
+    });
+    requestAnimationFrame(drawStars);
+}
+resize(); initStars();
+window.addEventListener('resize', () => { resize(); initStars(); });
+requestAnimationFrame(drawStars);
+
+/* Scroll reveal */
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.journey-step, .quiz-section').forEach(el => observer.observe(el));
+
+/* Quiz Data */
+const rounds = [
+    {
+        label: 'ROUND 1 — Big Bang & Stars',
+        qs: [
+            { q: '1. പ്രപഞ്ചം ഉണ്ടായ മഹാസ്ഫോടനത്തിന്റെ പേരെന്ത്?', opts: ['Solar Flare','Big Bang','Supernova','Quasar'], ans: 1 },
+            { q: '2. Big Bang നടന്നത് ഏകദേശം എത്ര വർഷം മുമ്പ്?', opts: ['500 കോടി വർഷം','1000 കോടി വർഷം','1380 കോടി വർഷം','2000 കോടി വർഷം'], ans: 2 },
+            { q: '3. നമ്മുടെ ഗാലക്സിയുടെ പേരെന്ത്?', opts: ['Andromeda','Milky Way','Triangulum','Sombrero'], ans: 1 },
+            { q: '4. Milky Way ഒരു സെക്കൻഡിൽ ഏകദേശം എത്ര km വേഗതയിൽ സഞ്ചരിക്കുന്നു?', opts: ['100 km','300 km','600 km','1000 km'], ans: 2 }
+        ]
+    },
+    {
+        label: 'ROUND 2 — Solar System & Black Holes',
+        qs: [
+            { q: '5. നമ്മുടെ സൗരയൂഥത്തിൽ എത്ര ഗ്രഹങ്ങൾ ഉണ്ട്?', opts: ['6','7','8','9'], ans: 2 },
+            { q: '6. ശനിയുടെ വലയങ്ങൾ എന്തുകൊണ്ടാണ് നിർമ്മിച്ചിരിക്കുന്നത്?', opts: ['സ്വർണ്ണവും വെള്ളിയും','വാതകങ്ങൾ മാത്രം','ഐസും പാറക്കഷ്ണങ്ങളും','ദ്രവ്യ തരംഗങ്ങൾ'], ans: 2 },
+            { q: '7. പ്രകാശത്തെ പോലും പിടിച്ചു നിർത്തുന്ന പ്രതിഭാസം ഏതാണ്?', opts: ['Neutron Star','Dark Matter','Pulsar','Black Hole'], ans: 3 },
+            { q: '8. Black Hole ഉള്ളിൽ സമയത്തിന് എന്ത് സംഭവിക്കുന്നു?', opts: ['വേഗം കൂടുന്നു','സ്തംഭിക്കുന്നു','സാവധാനം ആകുന്നു','തിരിച്ചോടുന്നു'], ans: 2 }
+        ]
+    },
+    {
+        label: 'ROUND 3 — Quantum & Dark Matter',
+        qs: [
+            { q: '9. Quantum ലോകത്ത് ഒരു കണിക ഒരേ സമയം എങ്ങനെ ഇരിക്കാം?', opts: ['ഒരിടത്ത് മാത്രം','രണ്ട് ഇടത്ത്','എവിടെയും ഇല്ല','ചലിക്കില്ല'], ans: 1 },
+            { q: '10. ആറ്റങ്ങൾക്കിടയിലെ ശൂന്യസ്ഥലം ഒഴിവാക്കിയാൽ മനുഷ്യവംശം ഒതുങ്ങുന്നത് എവിടെ?', opts: ['ഒരു ഗ്ലാസ് വെള്ളം','ഒരു ഇഷ്ടിക','ഒരു പഞ്ചസാര തരി','ഒരു നാണയം'], ans: 2 },
+            { q: '11. പ്രപഞ്ചത്തിന്റെ ഏത് ശതമാനം Dark Matter & Energy ആണ്?', opts: ['25%','50%','75%','95%'], ans: 3 },
+            { q: '12. പ്രപഞ്ചം ഇപ്പോഴും എന്ത് ചെയ്യുന്നു?', opts: ['ചുരുങ്ങുന്നു','സ്ഥിരമാണ്','വികസിക്കുന്നു','കറങ്ങുന്നു'], ans: 2 }
+        ]
+    }
+];
+
+let currentRound = 0, totalScore = 0, roundScore = 0, answeredInRound = 0;
+
+function renderRound() {
+    const r = rounds[currentRound];
+    document.getElementById('round-label').textContent = r.label;
+    document.getElementById('round-result').style.display = 'none';
+    document.getElementById('final-result').style.display = 'none';
+    roundScore = 0; answeredInRound = 0;
+
+    for (let i = 0; i < 3; i++) {
+        const dot = document.getElementById('dot-'+(i+1));
+        dot.className = 'round-dot';
+        if (i < currentRound) dot.classList.add('done');
+        else if (i === currentRound) dot.classList.add('active');
+    }
+
+    const container = document.getElementById('questions-container');
+    container.innerHTML = '';
+
+    r.qs.forEach((q, qi) => {
+        const item = document.createElement('div');
+        item.className = 'quiz-item';
+
+        const qText = document.createElement('div');
+        qText.className = 'quiz-question';
+        qText.textContent = q.q;
+        item.appendChild(qText);
+
+        const opts = document.createElement('div');
+        opts.className = 'quiz-options';
+        q.opts.forEach((opt, oi) => {
+            const btn = document.createElement('button');
+            btn.className = 'quiz-btn';
+            btn.textContent = opt;
+            btn.onclick = () => handleAnswer(btn, qi, oi === q.ans, q.ans, item);
+            opts.appendChild(btn);
+        });
+        item.appendChild(opts);
+
+        const fb = document.createElement('div');
+        fb.className = 'quiz-feedback';
+        fb.id = 'fb_'+qi;
+        item.appendChild(fb);
+
+        container.appendChild(item);
+    });
+}
+
+function handleAnswer(btn, qi, correct, ansIdx, item) {
+    const btns = item.querySelectorAll('.quiz-btn');
+    const fb = document.getElementById('fb_'+qi);
+    btns.forEach((b, i) => {
+        b.disabled = true;
+        if (b === btn) b.classList.add(correct ? 'correct' : 'wrong');
+        if (i === ansIdx) b.classList.add('correct');
+    });
+    if (correct) { roundScore++; totalScore++; fb.textContent = '✓ ശരിയാണ്!'; fb.style.color = '#86efac'; }
+    else { fb.textContent = '✗ തെറ്റ്. ശരിയുത്തരം പച്ചയിൽ കാണാം.'; fb.style.color = '#fca5a5'; }
+    answeredInRound++;
+    if (answeredInRound === rounds[currentRound].qs.length) setTimeout(showRoundResult, 600);
+}
+
+function showRoundResult() {
+    const isLast = currentRound === rounds.length - 1;
+    if (isLast) {
+        document.getElementById('dot-3').className = 'round-dot done';
+        document.getElementById('final-score-num').textContent = totalScore + ' / 12';
+        const msg = totalScore === 12 ? '🌌 Perfect! നീ ഒരു Universe Genius ആണ്!' :
+                    totalScore >= 9  ? '⭐ Excellent! Universe നിന്നെ Impress ആകും!' :
+                    totalScore >= 6  ? '🚀 Good job! കൂടുതൽ explore ചെയ്യാം.' :
+                                       '🔭 Try again — universe ഇനിയും പഠിക്കാം!';
+        document.getElementById('final-msg').textContent = msg;
+        document.getElementById('final-result').style.display = 'block';
+    } else {
+        document.getElementById('round-score-num').textContent = roundScore + ' / 4';
+        const nextName = rounds[currentRound+1].label.split('—')[1].trim();
+        document.getElementById('next-round-btn').textContent = 'NEXT: ' + nextName + ' →';
+        document.getElementById('round-result').style.display = 'block';
+    }
+}
+
+function nextRound() {
+    document.getElementById('dot-'+(currentRound+1)).className = 'round-dot done';
+    currentRound++;
+    renderRound();
+    document.getElementById('questions-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetQuiz() {
+    currentRound = 0; totalScore = 0;
+    renderRound();
+}
+
+renderRound();
+</script>
 </body>
 </html>
